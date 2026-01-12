@@ -99,7 +99,7 @@ public class ApplicationDbContext : DbContext
         // Pendência
         modelBuilder.Entity<Pendencia>(entity =>
         {
-            entity.ToTable("pendencia", t => t.HasCheckConstraint("CHK_pendencia_status_enum", "status IN ('ABERTA', 'EM_ANDAMENTO', 'RESOLVIDA', 'CANCELADA')"));
+            entity.ToTable("pendencia", t => t.HasCheckConstraint("CHK_pendencia_status_enum", "\"Status\" IN ('ABERTA', 'EM_ANDAMENTO', 'RESOLVIDA', 'CANCELADA')"));
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => new { e.CorrelationType, e.CorrelationId });
             entity.HasIndex(e => new { e.Tipo, e.Status });
@@ -113,7 +113,7 @@ public class ApplicationDbContext : DbContext
         // Notificação
         modelBuilder.Entity<Notificacao>(entity =>
         {
-            entity.ToTable("notificacao_email", t => t.HasCheckConstraint("CHK_notificacao_status_enum", "status IN ('ENFILEIRADA', 'ENVIADA', 'FALHOU')"));
+            entity.ToTable("notificacao_email", t => t.HasCheckConstraint("CHK_notificacao_status_enum", "\"Status\" IN ('ENFILEIRADA', 'ENVIADA', 'FALHOU')"));
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => new { e.Status, e.Tipo });
             entity.HasIndex(e => new { e.CorrelationType, e.CorrelationId });
