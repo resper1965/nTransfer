@@ -102,7 +102,8 @@ public class WorkflowStateMachine : IWorkflowStateMachine
             return false; // Se não há restrição definida, não permite (mais seguro)
         }
 
-        return allowedRoles.Contains(role) || allowedRoles.Contains("SISTEMA");
+        // Permite se o role está na lista OU se o role é "SISTEMA"
+        return allowedRoles.Contains(role) || role == "SISTEMA";
     }
 
     private Dictionary<WorkflowStatus, Dictionary<FluxType, List<WorkflowStatus>>> BuildTransitionMatrix()
