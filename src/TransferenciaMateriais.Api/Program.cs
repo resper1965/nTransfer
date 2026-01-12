@@ -6,8 +6,11 @@ using TransferenciaMateriais.Application.UseCases.Vinculo;
 using TransferenciaMateriais.Application.UseCases.Fiscal;
 using TransferenciaMateriais.Application.UseCases.Auditoria;
 using TransferenciaMateriais.Application.UseCases.Integration;
+using TransferenciaMateriais.Application.UseCases.Notification;
+using TransferenciaMateriais.Application.Services;
 using TransferenciaMateriais.Domain;
 using TransferenciaMateriais.Infrastructure.Integration;
+using TransferenciaMateriais.Infrastructure.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,9 +35,16 @@ builder.Services.AddScoped<ListarVinculosUseCase>();
 builder.Services.AddScoped<ValidarNFeUseCase>();
 builder.Services.AddScoped<ListarAuditoriaUseCase>();
 builder.Services.AddScoped<ProcessarNFeQiveUseCase>();
+builder.Services.AddScoped<EnviarNotificacaoUseCase>();
+
+// Register Services
+builder.Services.AddScoped<NotificationService>();
 
 // Register Integration Adapter (stub até TBD-01)
 builder.Services.AddScoped<IIntegrationAdapter, StubIntegrationAdapter>();
+
+// Register Email Sender (stub para desenvolvimento)
+builder.Services.AddScoped<IEmailSender, StubEmailSender>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
