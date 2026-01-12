@@ -22,7 +22,8 @@ public class CriarVinculoUseCaseTests : IDisposable
             .Options;
 
         _context = new ApplicationDbContext(options);
-        _auditoriaService = new AuditoriaService(_context, new Microsoft.Extensions.Logging.LoggerFactory().CreateLogger<AuditoriaService>());
+        var loggerFactory = new Microsoft.Extensions.Logging.LoggerFactory();
+        _auditoriaService = new AuditoriaService(_context, loggerFactory.CreateLogger(typeof(AuditoriaService).FullName ?? "AuditoriaService"));
         _useCase = new CriarVinculoUseCase(_context, _auditoriaService);
     }
 
