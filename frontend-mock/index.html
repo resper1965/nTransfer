@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprovações Pendentes — Transferência de Materiais</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #cbd5e1;
+            line-height: 1.625;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 1rem;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.875rem;
+            font-weight: 500;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        select, input {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #00ade8;
+        }
+
+        .approvals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .approval-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            transition: border-color 0.2s;
+        }
+
+        .approval-card:hover {
+            border-color: #475569;
+        }
+
+        .approval-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .approval-info h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.125rem;
+            color: #f1f5f9;
+            margin-bottom: 0.25rem;
+        }
+
+        .approval-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-pending {
+            background: #1e3a5f;
+            color: #60a5fa;
+        }
+
+        .badge-entrega {
+            background: #1e3a3a;
+            color: #4ade80;
+        }
+
+        .badge-medicao {
+            background: #3a1e3a;
+            color: #d946ef;
+        }
+
+        .timeline {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #334155;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .timeline-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ade8;
+            margin-top: 0.375rem;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-date {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #00ade8;
+            color: #0f172a;
+        }
+
+        .btn-primary:hover {
+            background: #00b8f0;
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: #cbd5e1;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00ade8;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Aprovações Pendentes</h1>
+            <p class="subtitle">Gestão de aprovações de entrega e medição</p>
+        </header>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label>Tipo</label>
+                <select id="filterTipo">
+                    <option value="">Todos</option>
+                    <option value="ENTREGA">Entrega</option>
+                    <option value="MEDICAO">Medição</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="filterStatus">
+                    <option value="">Todos</option>
+                    <option value="PENDENTE">Pendente</option>
+                    <option value="APROVADA">Aprovada</option>
+                    <option value="REPROVADA">Reprovada</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Filial Destino</label>
+                <input type="text" id="filterFilial" placeholder="FIL-DEST-01">
+            </div>
+        </div>
+
+        <div class="approvals-list" id="approvalsList">
+            <!-- Aprovações serão inseridas aqui via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal de Decisão -->
+    <div class="modal" id="decisionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Aprovar/Reprovar</h2>
+                <p class="subtitle" id="modalSubtitle"></p>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Motivo (opcional para aprovação, obrigatório para reprovação)</label>
+                    <textarea id="motivoTextarea" placeholder="Descreva o motivo da decisão..."></textarea>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="aprovar()">Aprovar</button>
+                <button class="btn btn-secondary" onclick="reprovar()">Reprovar</button>
+                <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados mock
+        const approvals = [
+            {
+                id: '1',
+                tipo: 'ENTREGA',
+                status: 'PENDENTE',
+                osNumero: 'OS-2025-000123',
+                filialDestino: 'FIL-DEST-01',
+                responsavel: 'GESTOR_CONTRATO',
+                createdAt: '2025-01-10T10:00:00Z',
+                timeline: [
+                    { evento: 'OS criada', data: '2025-01-05T08:00:00Z' },
+                    { evento: 'Material fabricado', data: '2025-01-08T14:00:00Z' },
+                    { evento: 'NFe emitida', data: '2025-01-09T10:00:00Z' },
+                    { evento: 'Aprovação pendente', data: '2025-01-10T10:00:00Z' }
+                ]
+            },
+            {
+                id: '2',
+                tipo: 'MEDICAO',
+                status: 'PENDENTE',
+                osNumero: 'OS-2025-000124',
+                filialDestino: 'FIL-DEST-02',
+                responsavel: 'GESTOR_CONTRATO',
+                createdAt: '2025-01-11T09:00:00Z',
+                timeline: [
+                    { evento: 'OS criada', data: '2025-01-06T08:00:00Z' },
+                    { evento: 'Material fabricado', data: '2025-01-09T14:00:00Z' },
+                    { evento: 'Medição concluída no RM', data: '2025-01-11T09:00:00Z' }
+                ]
+            }
+        ];
+
+        let currentApprovalId = null;
+
+        function renderApprovals() {
+            const list = document.getElementById('approvalsList');
+            const tipoFilter = document.getElementById('filterTipo').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+            const filialFilter = document.getElementById('filterFilial').value.toLowerCase();
+
+            const filtered = approvals.filter(a => {
+                if (tipoFilter && a.tipo !== tipoFilter) return false;
+                if (statusFilter && a.status !== statusFilter) return false;
+                if (filialFilter && !a.filialDestino.toLowerCase().includes(filialFilter)) return false;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <p>Nenhuma aprovação encontrada</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = filtered.map(a => `
+                <div class="approval-card">
+                    <div class="approval-header">
+                        <div class="approval-info">
+                            <h3>${a.osNumero}</h3>
+                            <div class="approval-meta">
+                                <span>Filial: ${a.filialDestino}</span>
+                                <span>Responsável: ${a.responsavel}</span>
+                                <span>Criado em: ${new Date(a.createdAt).toLocaleDateString('pt-BR')}</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge badge-${a.status.toLowerCase()}">${a.status}</span>
+                            <span class="badge badge-${a.tipo.toLowerCase()}">${a.tipo}</span>
+                        </div>
+                    </div>
+                    <div class="timeline">
+                        ${a.timeline.map(t => `
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <div>${t.evento}</div>
+                                    <div class="timeline-date">${new Date(t.data).toLocaleString('pt-BR')}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${a.status === 'PENDENTE' ? `
+                        <div class="actions">
+                            <button class="btn btn-primary" onclick="abrirModal('${a.id}')">Decidir</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function abrirModal(approvalId) {
+            currentApprovalId = approvalId;
+            const approval = approvals.find(a => a.id === approvalId);
+            document.getElementById('modalTitle').textContent = `Decisão - ${approval.osNumero}`;
+            document.getElementById('modalSubtitle').textContent = `Tipo: ${approval.tipo} | Filial: ${approval.filialDestino}`;
+            document.getElementById('motivoTextarea').value = '';
+            document.getElementById('decisionModal').classList.add('active');
+        }
+
+        function fecharModal() {
+            document.getElementById('decisionModal').classList.remove('active');
+            currentApprovalId = null;
+        }
+
+        function aprovar() {
+            if (!currentApprovalId) return;
+            const motivo = document.getElementById('motivoTextarea').value;
+            console.log('Aprovar:', currentApprovalId, motivo);
+            // Aqui faria a chamada à API: POST /aprovacoes/{id}/decisao { decisao: 'APROVADA', motivo }
+            alert('Aprovação registrada com sucesso!');
+            const approval = approvals.find(a => a.id === currentApprovalId);
+            approval.status = 'APROVADA';
+            fecharModal();
+            renderApprovals();
+        }
+
+        function reprovar() {
+            if (!currentApprovalId) return;
+            const motivo = document.getElementById('motivoTextarea').value;
+            if (!motivo.trim()) {
+                alert('Motivo é obrigatório para reprovação.');
+                return;
+            }
+            console.log('Reprovar:', currentApprovalId, motivo);
+            // Aqui faria a chamada à API: POST /aprovacoes/{id}/decisao { decisao: 'REPROVADA', motivo }
+            alert('Reprovação registrada com sucesso!');
+            const approval = approvals.find(a => a.id === currentApprovalId);
+            approval.status = 'REPROVADA';
+            fecharModal();
+            renderApprovals();
+        }
+
+        // Event listeners
+        document.getElementById('filterTipo').addEventListener('change', renderApprovals);
+        document.getElementById('filterStatus').addEventListener('change', renderApprovals);
+        document.getElementById('filterFilial').addEventListener('input', renderApprovals);
+
+        // Render inicial
+        renderApprovals();
+    </script>
+</body>
+</html>

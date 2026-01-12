@@ -8,6 +8,9 @@ using TransferenciaMateriais.Application.UseCases.Auditoria;
 using TransferenciaMateriais.Application.UseCases.Integration;
 using TransferenciaMateriais.Application.UseCases.Notification;
 using TransferenciaMateriais.Application.UseCases.Paineis;
+using TransferenciaMateriais.Application.UseCases.Anexos;
+using TransferenciaMateriais.Application.UseCases.Medicao;
+using TransferenciaMateriais.Application.UseCases.Caminhao;
 using TransferenciaMateriais.Application.Services;
 using TransferenciaMateriais.Domain;
 using TransferenciaMateriais.Infrastructure.Integration;
@@ -40,6 +43,9 @@ builder.Services.AddScoped<EnviarNotificacaoUseCase>();
 builder.Services.AddScoped<ListarOCPendenteEntregaFuturaUseCase>();
 builder.Services.AddScoped<ListarPendenciasErroVinculoUseCase>();
 builder.Services.AddScoped<ListarAprovacoesPendentesUseCase>();
+builder.Services.AddScoped<ValidarAnexosObrigatoriosUseCase>();
+builder.Services.AddScoped<ProcessarMedicaoConcluidaUseCase>();
+builder.Services.AddScoped<RegistrarCaminhaoNoLocalUseCase>();
 
 // Register Services
 builder.Services.AddScoped<NotificationService>();
