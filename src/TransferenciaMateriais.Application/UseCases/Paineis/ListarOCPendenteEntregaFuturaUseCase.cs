@@ -67,7 +67,7 @@ public class ListarOCPendenteEntregaFuturaUseCase
         {
             var tipoStr = oc.OrdemServico.FluxType == Domain.Enums.FluxType.ENTREGA_FUTURA_MAE ? "MAE" : "FILHA";
             var diasPendente = oc.OrdemServico.DataEstimadaEntrega.HasValue
-                ? (int?)(DateOnly.FromDateTime(DateTime.UtcNow) - oc.OrdemServico.DataEstimadaEntrega.Value).Days
+                ? (int?)(DateOnly.FromDateTime(DateTime.UtcNow).DayNumber - oc.OrdemServico.DataEstimadaEntrega.Value.DayNumber)
                 : null;
 
             return new OCPendenteDto
