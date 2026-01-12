@@ -43,6 +43,10 @@ docker-logs: ## Mostra logs do container
 docker-down: ## Para containers de produção
 	docker compose -f docker-compose.prod.yml down
 
-deploy-local: ## Deploy local completo (build + up + migrations)
+deploy-local: ## Deploy local completo (build + up + migrations) - Requer Docker
 	@chmod +x scripts/deploy-local.sh
 	@./scripts/deploy-local.sh
+
+run-local: ## Roda localmente SEM Docker (requer .NET SDK e PostgreSQL)
+	@chmod +x scripts/run-local.sh
+	@./scripts/run-local.sh
