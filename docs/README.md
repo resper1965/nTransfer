@@ -77,7 +77,7 @@ Para evitar divergências entre documentos, os seguintes artefatos são **fonte 
 - **[examples.md](./specs/transferencia-materiais/examples.md)** — Exemplos práticos de API e eventos
 
 ### Referência
-- **[glossario.md](./glossario.md)** — Glossário de termos técnicos do domínio
+- **[Glossário](./glossario.md)** — Glossário de termos técnicos do domínio
 
 ### Auditorias
 - **[Auditoria de Documentação](./audits/documentacao.md)** — Análise de lacunas e inconsistências na documentação
@@ -166,9 +166,17 @@ Antes de commit/PR, verificar:
 - [ ] Build passa (`make build`)
 - [ ] Testes passam (`make test`)
 - [ ] Lint passa (`make lint`)
-- [ ] Links funcionam (verificar manualmente)
+- [ ] Validações passam (`make validate`)
+- [ ] Links funcionam (verificar manualmente ou `./scripts/check-links.sh`)
 - [ ] OpenAPI válido
 - [ ] Diagramas Mermaid renderizam
 - [ ] Nenhuma referência a ID inexistente
 
 Ver [VALIDACAO.md](./VALIDACAO.md) para checklist completo.
+
+## 🤝 Como Contribuir
+
+Para contribuir com o projeto, consulte:
+- [CONTRIBUTING.md](../CONTRIBUTING.md) — Guia de contribuição
+- [TBD.md](./specs/transferencia-materiais/TBD.md) — Verifique pendências antes de implementar
+- [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md) — Setup e desenvolvimento local
