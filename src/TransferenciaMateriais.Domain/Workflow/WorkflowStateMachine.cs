@@ -99,7 +99,7 @@ public class WorkflowStateMachine : IWorkflowStateMachine
     {
         if (!_requiredRoles.TryGetValue(status, out var allowedRoles))
         {
-            return true; // Se não há restrição, permite
+            return false; // Se não há restrição definida, não permite (mais seguro)
         }
 
         return allowedRoles.Contains(role) || allowedRoles.Contains("SISTEMA");
