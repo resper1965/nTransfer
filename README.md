@@ -6,7 +6,6 @@ Desenvolvido por **ness.**
 
 **Repositório:** [https://github.com/resper1965/nTransfer](https://github.com/resper1965/nTransfer)
 
-Aplicação desenvolvida com auxílio do GitHub Spec Kit.
 
 ## 🔒 Artefatos Canônicos (Fontes de Verdade)
 
@@ -58,55 +57,6 @@ A documentação completa do projeto está em [`docs/`](./docs/):
 - **[Glossário](./docs/glossario.md)** — Termos técnicos e nomenclatura padrão
 - **[Exemplos](./docs/specs/transferencia-materiais/examples.md)** — Exemplos práticos de API e auditoria
 
-## 🛠️ Ferramentas de Desenvolvimento
-
-Este projeto utiliza o **GitHub Spec Kit** como ferramenta de auxílio ao desenvolvimento. O spec-kit **não faz parte da aplicação final**, sendo usado apenas durante o processo de desenvolvimento para facilitar o Spec-Driven Development.
-
-### Setup Inicial
-
-Para configurar o spec-kit no projeto:
-
-```bash
-# Opção 1: Usar o script de setup
-./.spec-kit-setup.sh
-
-# Opção 2: Instalação manual
-uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
-```
-
-### Verificar Instalação
-
-```bash
-specify check
-```
-
-### Inicializar Projeto com Spec Kit
-
-```bash
-# Inicializar no diretório atual com assistente de IA
-specify init . --ai claude
-# ou
-specify init . --ai copilot
-```
-
-### Comandos Úteis
-
-```bash
-# Via npm scripts
-npm run specify:check    # Verificar instalação
-npm run specify:init     # Inicializar projeto
-npm run specify:help    # Ver ajuda
-
-# Via CLI direto
-specify check           # Verificar instalação
-specify init . --ai <assistente>  # Inicializar
-specify --help          # Ver ajuda
-```
-
-## 📚 Documentação
-
-Para mais informações sobre como usar o Spec Kit, consulte:
-- [SPEC-KIT.md](./SPEC-KIT.md) - Guia completo de uso do Spec Kit
 
 ## 🔧 Requisitos
 
@@ -117,18 +67,6 @@ Para mais informações sobre como usar o Spec Kit, consulte:
 
 Para mais detalhes, consulte o [Guia de Desenvolvimento](./docs/DEVELOPMENT_GUIDE.md).
 
-## 📖 Comandos do Spec Kit
-
-Após inicializar o projeto, os seguintes comandos estarão disponíveis no chat do seu assistente de IA:
-
-- `/speckit.constitution` - Cria ou atualiza os princípios e diretrizes de desenvolvimento
-- `/speckit.specify` - Define os requisitos e histórias de usuário
-- `/speckit.plan` - Cria planos de implementação técnica
-- `/speckit.tasks` - Gera listas de tarefas acionáveis
-- `/speckit.implement` - Executa as tarefas para construir a funcionalidade
-
 ## 🔗 Links Úteis
 
-- [GitHub Spec Kit](https://github.com/github/spec-kit)
-- [Documentação Oficial](https://github.github.io/spec-kit/)
-- [Microsoft Learn - Spec-Driven Development](https://learn.microsoft.com/pt-br/training/modules/spec-driven-development-github-spec-kit-enterprise-developers/)
+- [Documentação Completa](./docs/README.md) — Índice de toda a documentação do projeto
