@@ -49,3 +49,10 @@
 ## T12 — Definir "caminhão no local" (TBD-07)
 - [ ] Definir fonte (manual/integrado) e refletir no workflow.
 - DoD: estado/evento registrado e auditado.
+
+## T13 — Mock/Protótipo de Frontend para Aprovação (PLAN P5, RF-07, RF-10)
+- [ ] Criar mock/protótipo estático ou interativo da tela de aprovação.
+- [ ] Incluir: lista de aprovações pendentes, modal de decisão (aprovar/reprovar), timeline do processo.
+- [ ] Validar UX com stakeholders antes da implementação completa.
+- DoD: protótipo validado + feedback incorporado no DESIGN_GUIDE.md.
+- Observação: Pode ser HTML estático, Next.js mock, ou ferramenta de prototipagem (Figma/Storybook). Tecnologia a definir conforme stack escolhida para frontend.

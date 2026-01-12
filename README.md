@@ -6,6 +6,60 @@ Desenvolvido por **ness.**
 
 **Repositório:** [https://github.com/resper1965/nTransfer](https://github.com/resper1965/nTransfer)
 
+---
+
+## 📖 Sobre o Sistema
+
+### O que é?
+
+O **Sistema de Transferência de Materiais Entre Filiais** é uma rotina adicional (camada complementar) que orquestra, registra, audita e notifica o processo de transferência de materiais entre filiais de uma organização.
+
+### Problema que resolve
+
+O fluxo de transferência de materiais envolve múltiplas áreas (contratos, fiscal, administrativo de filial, fábrica/inspetor, fabricante, financeiro) e depende de etapas coordenadas com documentos fiscais (NFe/XML/DANFE), vínculos entre Ordem de Serviço (OS), Ordem de Compra (OC) e Nota Fiscal Eletrônica (NFe).
+
+**Desafios comuns:**
+- Erros de vínculo entre OS, OC e NFe
+- Falta de rastreabilidade de decisões e aprovações
+- Processos travados por divergências não críticas
+- Ausência de evidências obrigatórias (anexos)
+- Falta de notificações em pontos críticos do fluxo
+
+### Solução
+
+O sistema **não substitui** os ERPs existentes (RM, RM nFlow, Qive), mas **organiza o trabalho** através de:
+
+- **Orquestração de workflow** — Gerencia estados e transições dos três fluxos principais
+- **Vínculo inteligente** — Conecta OS, OC e NFe com tratamento de divergências
+- **Auditoria completa** — Registra todas as decisões, aprovações e transições
+- **Painéis operacionais** — Fila de trabalho por papel (fiscal, administrativo, gestor)
+- **Notificações automáticas** — E-mails em pontos críticos do processo
+- **Gates obrigatórios** — Garante anexos e validações antes de avançar
+
+### Fluxos Suportados
+
+O sistema suporta três fluxos operacionais:
+
+1. **F1: Compra Direta** — Fluxo completo de fabricação até entrega
+2. **F2: Entrega Futura (mãe)** — Faturamento antecipado sem atualização de estoque
+3. **F3: Entrega Futura (filha)** — Remessa efetiva após entrega futura
+
+### Objetivos
+
+- ✅ **Reduzir erros operacionais** de vínculo OS/OC/NFe
+- ✅ **Aumentar rastreabilidade** ponta a ponta (quem fez o quê, quando, por quê)
+- ✅ **Assegurar gates obrigatórios** (ex.: anexo obrigatório na entrada destino)
+- ✅ **Diminuir retrabalho** via painéis de pendência e notificações
+
+### Tecnologia
+
+- **Backend:** .NET 8 (Clean Architecture)
+- **Banco de Dados:** PostgreSQL
+- **API:** RESTful (OpenAPI 3.0.3)
+- **Integração:** Qive ↔ RM (stub inicial, integração real via TBD-01)
+
+---
+
 
 ## 🔒 Artefatos Canônicos (Fontes de Verdade)
 

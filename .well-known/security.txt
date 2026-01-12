@@ -1,0 +1,19 @@
+Contact: mailto:security@ness.com.br
+Expires: 2026-12-31T23:59:59.000Z
+Preferred-Languages: pt-BR, en
+Canonical: https://github.com/resper1965/nTransfer/blob/main/.well-known/security.txt
+Policy: https://github.com/resper1965/nTransfer/blob/main/SECURITY.md
+
+# Política de Segurança
+# Para reportar vulnerabilidades, envie um e-mail para security@ness.com.br
+# Não abra issues públicas para vulnerabilidades de segurança.
+
+# Tempo de resposta esperado: 48 horas úteis
+
+# Processo de Divulgação
+# 1. A vulnerabilidade será analisada pela equipe de segurança
+# 2. Uma correção será desenvolvida e testada
+# 3. A correção será lançada em uma versão patch
+# 4. A vulnerabilidade será divulgada publicamente após a correção estar disponível
+
+# Desenvolvido por ness.

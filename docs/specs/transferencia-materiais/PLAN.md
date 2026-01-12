@@ -22,6 +22,7 @@ P4) Integração Qive ↔ RM (stub + adaptador) (RF-03, RNF-02, RNF-05)
 P5) API interna e painéis (RF-04, RF-06, RF-07)
 - Implementar endpoints definidos em `contracts/openapi.yaml`.
 - Painéis: OC pendente, pendências de vínculo, aprovações pendentes.
+- **Mock/Protótipo de Frontend para Aprovação** (T13): validar UX antes da implementação completa.
 
 P6) Notificações e-mail (RF-06)
 - Templates simples + auditoria do envio.
