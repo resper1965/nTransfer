@@ -88,7 +88,8 @@ public class WorkflowStateMachine : IWorkflowStateMachine
 
         if (errors.Any())
         {
-            return WorkflowTransitionResult.Failure("Regras de negócio violadas.", errors);
+            var errorMessage = string.Join(" ", errors);
+            return WorkflowTransitionResult.Failure(errorMessage, errors);
         }
 
         return WorkflowTransitionResult.Success();
