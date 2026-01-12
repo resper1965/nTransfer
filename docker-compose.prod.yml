@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: transferencia-api:latest
+    container_name: transferencia-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=${DATABASE_URL:-Host=postgres;Database=transferencia_materiais;Username=transferencia;Password=transferencia}
+      - Email__Provider=${EMAIL_PROVIDER:-smtp}
+      - Email__SmtpHost=${EMAIL_SMTP_HOST:-}
+      - Email__SmtpPort=${EMAIL_SMTP_PORT:-587}
+      - Email__SmtpUser=${EMAIL_SMTP_USER:-}
+      - Email__SmtpPassword=${EMAIL_SMTP_PASSWORD:-}
+      - IntegrationAdapter__Mode=${INTEGRATION_ADAPTER_MODE:-stub}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: transferencia-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-transferencia}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-transferencia}
+      POSTGRES_DB: ${POSTGRES_DB:-transferencia_materiais}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-transferencia}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
