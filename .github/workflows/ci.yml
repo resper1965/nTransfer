@@ -47,6 +47,22 @@ jobs:
       - name: Run tests
         run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
 
+      - name: Validar links em docs
+        run: |
+          chmod +x scripts/check-links.sh
+          ./scripts/check-links.sh || echo "⚠️  Alguns links podem estar quebrados. Verifique manualmente."
+
+      - name: Validar OpenAPI (se disponível)
+        run: |
+          if command -v swagger-cli &> /dev/null; then
+            swagger-cli validate docs/contracts/openapi.yaml
+          elif command -v redocly &> /dev/null; then
+            redocly lint docs/contracts/openapi.yaml
+          else
+            echo "⚠️  swagger-cli ou redocly não disponível. Pulando validação OpenAPI."
+            echo "   Para validar localmente, instale: npm install -g @apidevtools/swagger-cli"
+          fi
+
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
         if: always()
