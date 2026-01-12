@@ -1,5 +1,7 @@
 using TransferenciaMateriais.Domain;
 
+using Microsoft.Extensions.Logging;
+
 namespace TransferenciaMateriais.Infrastructure.Email;
 
 /// <summary>

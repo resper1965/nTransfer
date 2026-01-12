@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TransferenciaMateriais.Domain\TransferenciaMateriais.Domain.csproj" />
-    <ProjectReference Include="..\TransferenciaMateriais.Application\TransferenciaMateriais.Application.csproj" />
   </ItemGroup>
 
 </Project>

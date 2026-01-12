@@ -1,0 +1,55 @@
+namespace TransferenciaMateriais.Domain.Enums;
+
+/// <summary>
+/// Estado canônico do workflow (fonte única de verdade).
+/// Todos os documentos devem usar exclusivamente estes estados.
+/// </summary>
+public enum WorkflowStatus
+{
+    // Compartilhados
+    OS_CRIADA,
+    ROMANEIO_CONFERIDO,
+    NFE_EMITIDA,
+    XML_OBTIDO,
+    NFE_VALIDADA_OK,
+    NFE_VALIDADA_NOK,
+    CORRECAO_EMISSAO_OU_VINCULO,
+    VINCULO_CRIADO,
+    VINCULO_CORRIGIDO,
+    ENTRADA_DESTINO_PENDENTE_ANEXO,
+    ENTRADA_DESTINO_CONCLUIDA,
+    PROCESSO_CONCLUIDO,
+    PROCESSO_CANCELADO,
+
+    // F1 — Compra Direta
+    MATERIAL_FABRICADO,
+    ESTOQUE_ORIGEM_ATUALIZADO,
+    NFE_SAIDA_ORIGEM_EMITIDA,
+    EM_TRANSITO,
+    CHEGADA_MATERIAL_DESTINO,
+    ESTOQUE_DESTINO_ATUALIZADO,
+
+    // F2 — Entrega Futura (mãe)
+    OS_ATUALIZADA_DATA_ESTIMADA,
+    NFE_ENTREGA_FUTURA_EMITIDA,
+    NFE_RECEBIDA_SEM_ESTOQUE,
+    OC_CRIADA_PARA_REMESSA,
+    AGUARDANDO_REMESSA,
+    ALERTA_7_DIAS_ENTREGA_ESTIMADA,
+
+    // F3 — Entrega Futura (filha)
+    OC_PENDENTE_ENTREGA_FUTURA,
+    APROVACAO_ENTREGA_PENDENTE,
+    ENTREGA_APROVADA,
+    ENTREGA_REPROVADA,
+    NFE_REMESSA_EMITIDA,
+    VINCULADA_OS_OC_NFE,
+    ENTRADA_ORIGEM_CONCLUIDA,
+    SAIDA_ORIGEM_CONCLUIDA,
+    ALERTA_30_DIAS_DESTINO,
+
+    // Medição (TBD-04 fechado)
+    APROVACAO_MEDICAO_PENDENTE,
+    MEDICAO_APROVADA,
+    MEDICAO_REPROVADA
+}
