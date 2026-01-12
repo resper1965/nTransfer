@@ -10,8 +10,8 @@ COPY src/TransferenciaMateriais.Domain/TransferenciaMateriais.Domain.csproj src/
 COPY src/TransferenciaMateriais.Application/TransferenciaMateriais.Application.csproj src/TransferenciaMateriais.Application/
 COPY src/TransferenciaMateriais.Infrastructure/TransferenciaMateriais.Infrastructure.csproj src/TransferenciaMateriais.Infrastructure/
 
-# Restore dependencies
-RUN dotnet restore
+# Restore dependencies (apenas projetos src, não tests)
+RUN dotnet restore src/TransferenciaMateriais.Api/TransferenciaMateriais.Api.csproj
 
 # Copy all source files
 COPY src/ ./src/
