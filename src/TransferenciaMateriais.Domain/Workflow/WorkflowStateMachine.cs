@@ -266,7 +266,9 @@ public class WorkflowStateMachine : IWorkflowStateMachine
             { WorkflowStatus.ENTRADA_DESTINO_CONCLUIDA, new List<string> { "ADM_FILIAL_DESTINO", "SISTEMA" } },
             { WorkflowStatus.PROCESSO_CANCELADO, new List<string> { "GESTOR_CONTRATO", "SISTEMA" } },
             { WorkflowStatus.MEDICAO_APROVADA, new List<string> { "SISTEMA" } },
-            { WorkflowStatus.MEDICAO_REPROVADA, new List<string> { "SISTEMA" } }
+            { WorkflowStatus.MEDICAO_REPROVADA, new List<string> { "SISTEMA" } },
+            { WorkflowStatus.OC_PENDENTE_ENTREGA_FUTURA, new List<string> { "ADM_FILIAL_ORIGEM", "SISTEMA" } },
+            { WorkflowStatus.OS_ATUALIZADA_DATA_ESTIMADA, new List<string> { "ADM_FILIAL_ORIGEM", "SISTEMA" } }
         };
     }
 }
