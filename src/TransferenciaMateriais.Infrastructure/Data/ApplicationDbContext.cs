@@ -27,7 +27,7 @@ public class ApplicationDbContext : DbContext
         // OS
         modelBuilder.Entity<OrdemServico>(entity =>
         {
-            entity.ToTable("os");
+            entity.ToTable("os", t => t.HasCheckConstraint("CHK_os_quantidadePlanejada_pos", "quantidade_planejada > 0"));
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.Numero).IsUnique();
             entity.HasIndex(e => new { e.FilialDestinoId, e.StatusWorkflow });
@@ -35,7 +35,6 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Numero).HasMaxLength(50);
             entity.Property(e => e.FilialDestinoId).HasMaxLength(50);
             entity.Property(e => e.QuantidadePlanejada).HasPrecision(18, 3);
-            entity.HasCheckConstraint("CHK_os_quantidadePlanejada_pos", "quantidade_planejada > 0");
         });
 
         // OC
@@ -100,7 +99,7 @@ public class ApplicationDbContext : DbContext
         // Pendência
         modelBuilder.Entity<Pendencia>(entity =>
         {
-            entity.ToTable("pendencia");
+            entity.ToTable("pendencia", t => t.HasCheckConstraint("CHK_pendencia_status_enum", "status IN ('ABERTA', 'EM_ANDAMENTO', 'RESOLVIDA', 'CANCELADA')"));
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => new { e.CorrelationType, e.CorrelationId });
             entity.HasIndex(e => new { e.Tipo, e.Status });
@@ -109,13 +108,12 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.CorrelationId).HasMaxLength(80);
             entity.Property(e => e.Descricao).HasMaxLength(800);
             entity.Property(e => e.OwnerRole).HasMaxLength(50);
-            entity.HasCheckConstraint("CHK_pendencia_status_enum", "status IN ('ABERTA', 'EM_ANDAMENTO', 'RESOLVIDA', 'CANCELADA')");
         });
 
         // Notificação
         modelBuilder.Entity<Notificacao>(entity =>
         {
-            entity.ToTable("notificacao_email");
+            entity.ToTable("notificacao_email", t => t.HasCheckConstraint("CHK_notificacao_status_enum", "status IN ('ENFILEIRADA', 'ENVIADA', 'FALHOU')"));
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => new { e.Status, e.Tipo });
             entity.HasIndex(e => new { e.CorrelationType, e.CorrelationId });
@@ -124,7 +122,6 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Assunto).HasMaxLength(200);
             entity.Property(e => e.ProviderMessageId).HasMaxLength(100);
             entity.Property(e => e.Erro).HasMaxLength(500);
-            entity.HasCheckConstraint("CHK_notificacao_status_enum", "status IN ('ENFILEIRADA', 'ENVIADA', 'FALHOU')");
         });
 
         // Anexo
