@@ -11,21 +11,78 @@
 - Acesso ao repositório GitHub
 - Variáveis de ambiente configuradas
 
+## 1.1 Configuração de Secrets
+
+### Gerar Secrets Aleatórios
+
+```bash
+# Gerar secrets aleatórios para produção
+chmod +x scripts/generate-secrets.sh
+./scripts/generate-secrets.sh
+```
+
+### Arquivos de Configuração
+
+- **`.env.example`** — Template com valores mock e exemplos reais
+- **`.env.local`** — Configuração local (não commitado)
+- **`.env.production.example`** — Template para produção
+
+### Configurar Ambiente Local
+
+```bash
+# 1. Copiar template
+cp .env.example .env.local
+
+# 2. Editar com suas configurações
+nano .env.local  # ou use seu editor preferido
+```
+
+### Valores Mock vs Reais
+
+**Mock (Desenvolvimento):**
+- Database: `localhost:5432` (Docker Compose)
+- Email: Mailpit local (`localhost:1025`)
+- Integration: Stub mode (`ALWAYS_OK`)
+
+**Reais (Produção):**
+- Database: Neon, Supabase, AWS RDS, etc.
+- Email: SendGrid, AWS SES, SMTP real
+- Integration: URLs e API keys reais
+
 ## 2. Opções de Deploy
 
 ### 2.1 Deploy Local com Docker Compose
 
-Para testar o deploy localmente:
+#### Opção 1: Script Automatizado (Recomendado)
+
+```bash
+# Deploy completo automatizado
+make deploy-local
+
+# Ou diretamente:
+chmod +x scripts/deploy-local.sh
+./scripts/deploy-local.sh
+```
+
+O script faz automaticamente:
+1. ✅ Verifica pré-requisitos (Docker, Docker Compose)
+2. ✅ Cria `.env.local` se não existir
+3. ✅ Build da imagem Docker
+4. ✅ Sobe PostgreSQL
+5. ✅ Aplica migrations
+6. ✅ Sobe API
+
+#### Opção 2: Manual
 
 ```bash
 # 1. Configure as variáveis de ambiente
-cp .env.example .env
-# Edite .env com suas configurações
+cp .env.example .env.local
+# Edite .env.local com suas configurações
 
 # 2. Faça build e suba os serviços
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml --env-file .env.local up -d --build
 
-# 3. Execute as migrations
+# 3. Execute as migrations (se necessário)
 docker compose -f docker-compose.prod.yml exec api dotnet ef database update \
   --project /app/src/TransferenciaMateriais.Infrastructure \
   --startup-project /app/src/TransferenciaMateriais.Api
@@ -37,7 +94,8 @@ docker compose -f docker-compose.prod.yml logs -f api
 A API estará disponível em:
 - **HTTP**: http://localhost:8080
 - **Health Check**: http://localhost:8080/health
-- **Swagger**: http://localhost:8080/swagger (se habilitado em produção)
+- **Swagger**: http://localhost:8080/swagger (se habilitado)
+- **Mailpit**: http://localhost:8025 (visualizar e-mails)
 
 ### 2.2 Deploy com GitHub Container Registry
 

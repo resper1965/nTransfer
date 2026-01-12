@@ -8,21 +8,33 @@ services:
     image: transferencia-api:latest
     container_name: transferencia-api
     ports:
-      - "8080:8080"
+      - "${API_PORT:-8080}:8080"
+    env_file:
+      - .env.local
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=${DATABASE_URL:-Host=postgres;Database=transferencia_materiais;Username=transferencia;Password=transferencia}
-      - Email__Provider=${EMAIL_PROVIDER:-smtp}
-      - Email__SmtpHost=${EMAIL_SMTP_HOST:-}
-      - Email__SmtpPort=${EMAIL_SMTP_PORT:-587}
+      - Email__Provider=${EMAIL_PROVIDER:-mailpit}
+      - Email__SmtpHost=${EMAIL_SMTP_HOST:-localhost}
+      - Email__SmtpPort=${EMAIL_SMTP_PORT:-1025}
       - Email__SmtpUser=${EMAIL_SMTP_USER:-}
       - Email__SmtpPassword=${EMAIL_SMTP_PASSWORD:-}
+      - Email__From=${EMAIL_SMTP_FROM:-noreply@local.transferencia}
+      - Email__FromName=${EMAIL_SMTP_FROM_NAME:-Transferência Local}
       - IntegrationAdapter__Mode=${INTEGRATION_ADAPTER_MODE:-stub}
+      - IntegrationAdapter__StubMode=${INTEGRATION_ADAPTER_STUB_MODE:-ALWAYS_OK}
+      - IntegrationAdapter__FailRate=${INTEGRATION_ADAPTER_FAIL_RATE:-0}
+      - IntegrationAdapter__Scenario=${INTEGRATION_ADAPTER_SCENARIO:-default}
+      - Logging__LogLevel__Default=${LOG_LEVEL:-Information}
     depends_on:
       postgres:
         condition: service_healthy
+      mailpit:
+        condition: service_started
     restart: unless-stopped
+    networks:
+      - transferencia-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
@@ -38,7 +50,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-transferencia}
       POSTGRES_DB: ${POSTGRES_DB:-transferencia_materiais}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -47,6 +59,25 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    networks:
+      - transferencia-network
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: transferencia-mailpit
+    ports:
+      - "${MAILPIT_WEB_PORT:-8025}:8025"  # Web UI
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"  # SMTP
+    environment:
+      MP_SMTP_BIND_ADDR: "0.0.0.0:1025"
+      MP_WEB_BIND_ADDR: "0.0.0.0:8025"
+    restart: unless-stopped
+    networks:
+      - transferencia-network
 
 volumes:
   postgres_data:
+
+networks:
+  transferencia-network:
+    driver: bridge
