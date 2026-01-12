@@ -1,0 +1,16 @@
+{
+  "name": "transferencia",
+  "version": "0.1.0",
+  "description": "Aplicação desenvolvida com auxílio do GitHub Spec Kit",
+  "private": true,
+  "scripts": {
+    "specify": "specify",
+    "specify:init": "specify init",
+    "specify:check": "specify check",
+    "specify:help": "specify --help"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  }
+}

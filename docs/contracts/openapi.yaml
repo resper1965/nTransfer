@@ -1,0 +1,979 @@
+openapi: 3.0.3
+info:
+  title: Transferência de Materiais Entre Filiais
+  version: 0.3.0
+  description: |
+    API para orquestração de workflow de transferência de materiais entre filiais.
+    Desenvolvido por **ness.**
+    Repositório: https://github.com/resper1965/nTransfer
+servers:
+  - url: https://api.example.local
+tags:
+  - name: OS
+  - name: Vinculos
+  - name: Fiscal
+  - name: Aprovacoes
+  - name: Anexos
+  - name: Paineis
+  - name: Integrations
+  - name: Auditoria
+
+security:
+  - bearerAuth: []
+
+paths:
+  /os:
+    get:
+      tags: [OS]
+      summary: Listar OS com filtros
+      parameters:
+        - in: query
+          name: filialDestinoId
+          schema: { type: string }
+          required: false
+        - in: query
+          name: status
+          schema: { $ref: "#/components/schemas/WorkflowStatus" }
+          required: false
+        - in: query
+          name: fluxType
+          schema: { $ref: "#/components/schemas/FluxType" }
+          required: false
+        - in: query
+          name: numero
+          schema: { type: string }
+          required: false
+      responses:
+        "200":
+          description: Lista de OS
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/OS" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    post:
+      tags: [OS]
+      summary: Criar OS
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OSCreateRequest" }
+            examples:
+              exemplo:
+                value:
+                  numero: "OS-2025-000123"
+                  filialDestinoId: "FIL-DEST-01"
+                  quantidadePlanejada: 10
+                  fluxType: "COMPRA_DIRETA"
+      responses:
+        "201":
+          description: OS criada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OS" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /os/{osId}:
+    get:
+      tags: [OS]
+      summary: Consultar OS por ID
+      parameters:
+        - in: path
+          name: osId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: OS
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OS" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags: [OS]
+      summary: Atualizar OS (ex. data estimada)
+      parameters:
+        - in: path
+          name: osId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OSUpdateRequest" }
+      responses:
+        "200":
+          description: OS atualizada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OS" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /vinculos:
+    get:
+      tags: [Vinculos]
+      summary: Listar vínculos por filtros (OS/OC/NFe)
+      parameters:
+        - in: query
+          name: osId
+          schema: { type: string, format: uuid }
+          required: false
+        - in: query
+          name: ocId
+          schema: { type: string, format: uuid }
+          required: false
+        - in: query
+          name: nfeChaveAcesso
+          schema: { type: string }
+          required: false
+      responses:
+        "200":
+          description: Lista de vínculos
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Vinculo" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    post:
+      tags: [Vinculos]
+      summary: Criar vínculo OS/OC/NFe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/VinculoCreateRequest" }
+            examples:
+              compra_direta:
+                value:
+                  osId: "os_01JABC..."
+                  ocId: null
+                  nfeChaveAcesso: "3525...123"
+                  divergenciaQuantidade: -1
+      responses:
+        "201":
+          description: Vínculo criado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Vinculo" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /fiscal/nfe/{chaveAcesso}/validacao:
+    post:
+      tags: [Fiscal]
+      summary: Registrar validação fiscal "NFe correta?"
+      parameters:
+        - in: path
+          name: chaveAcesso
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/NFeValidacaoRequest" }
+            examples:
+              incorreta:
+                value:
+                  decisao: "INCORRETA"
+                  motivo:
+                    categoria: "EMISSAO_NFE"
+                    detalhe: "Dados divergentes"
+      responses:
+        "200":
+          description: Validação registrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/NFeValidacaoResponse" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /aprovacoes:
+    get:
+      tags: [Aprovacoes]
+      summary: Listar aprovações com filtros
+      parameters:
+        - in: query
+          name: osId
+          schema: { type: string }
+        - in: query
+          name: tipo
+          schema: { type: string, enum: [ENTREGA, MEDICAO, VINCULO] }
+        - in: query
+          name: status
+          schema: { type: string, enum: [PENDENTE, APROVADA, REPROVADA] }
+      responses:
+        "200":
+          description: Lista de aprovações
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: "#/components/schemas/Aprovacao" }
+  /aprovacoes/{aprovacaoId}/decisao:
+    post:
+      tags: [Aprovacoes]
+      summary: Aprovar/Reprovar (entrega, medição, vínculo)
+      parameters:
+        - in: path
+          name: aprovacaoId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AprovacaoDecisaoRequest" }
+      responses:
+        "200":
+          description: Decisão registrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Aprovacao" }
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /anexos:
+    get:
+      tags: [Anexos]
+      summary: Listar anexos por correlação
+      parameters:
+        - in: query
+          name: correlationType
+          required: true
+          schema: { type: string, enum: [OS, OC, NFE, VINCULO] }
+        - in: query
+          name: correlationId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Lista de anexos
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Anexo" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    post:
+      tags: [Anexos]
+      summary: Registrar metadados de anexo (upload fora do escopo)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AnexoCreateRequest" }
+      responses:
+        "201":
+          description: Anexo registrado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Anexo" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /pendencias:
+    get:
+      tags: [Pendencias]
+      summary: Listar pendências por correlação e status
+      parameters:
+        - in: query
+          name: correlationType
+          required: false
+          schema: { type: string, enum: [OS, OC, NFE, VINCULO] }
+        - in: query
+          name: correlationId
+          required: false
+          schema: { type: string }
+        - in: query
+          name: status
+          required: false
+          schema: { $ref: "#/components/schemas/PendenciaStatus" }
+        - in: query
+          name: tipo
+          required: false
+          schema: { $ref: "#/components/schemas/PendenciaTipo" }
+      responses:
+        "200":
+          description: Lista de pendências
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Pendencia" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /notificacoes:
+    get:
+      tags: [Notificacoes]
+      summary: Listar notificações por correlação e status
+      parameters:
+        - in: query
+          name: correlationType
+          required: false
+          schema: { type: string, enum: [OS, OC, NFE, VINCULO] }
+        - in: query
+          name: correlationId
+          required: false
+          schema: { type: string }
+        - in: query
+          name: status
+          required: false
+          schema: { $ref: "#/components/schemas/NotificacaoStatus" }
+        - in: query
+          name: tipo
+          required: false
+          schema: { $ref: "#/components/schemas/NotificacaoTipo" }
+      responses:
+        "200":
+          description: Lista de notificações
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Notificacao" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /paineis/oc-pendente-entrega-futura:
+    get:
+      tags: [Paineis]
+      summary: Listar OCs pendentes de entrega futura
+      parameters:
+        - in: query
+          name: filialDestinoId
+          schema: { type: string }
+          required: false
+        - in: query
+          name: tipo
+          schema: { type: string, enum: [MAE, FILHA] }
+          required: false
+        - in: query
+          name: status
+          schema: { type: string }
+          required: false
+        - in: query
+          name: dataEstimadaFrom
+          schema: { type: string, format: date }
+          required: false
+        - in: query
+          name: dataEstimadaTo
+          schema: { type: string, format: date }
+          required: false
+      responses:
+        "200":
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: "#/components/schemas/OCPendente" }
+
+  /integrations/qive/nfe-recebida:
+    post:
+      tags: [Integrations]
+      summary: Ingestão de NFe recebida (webhook/polling TBD-01)
+      description: |
+        Endpoint para ingestão de metadados/XML de NFe. O mecanismo definitivo (webhook/polling/fila) é TBD-01.
+      security: []  # pode ser assinada por segredo/allowlist (TBD)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/QiveNFeRecebidaEvent" }
+      responses:
+        "202":
+          description: Aceito para processamento idempotente
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/QiveNFeRecebidaEvent" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /auditoria:
+    get:
+      tags: [Auditoria]
+      summary: Listar eventos de auditoria por correlação
+      parameters:
+        - in: query
+          name: correlationType
+          required: false
+          schema: { type: string, enum: [OS, OC, NFE, VINCULO] }
+        - in: query
+          name: correlationId
+          required: false
+          schema: { type: string }
+        - in: query
+          name: eventType
+          required: false
+          schema: { $ref: "#/components/schemas/AuditoriaEventType" }
+      responses:
+        "200":
+          description: Lista de eventos de auditoria
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AuditoriaEvento" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    Conflict:
+      description: Conflito de estado/idempotência
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            duplicateVinculo:
+              summary: Vínculo duplicado (idempotência)
+              value:
+                code: "CONFLICT"
+                message: "Vínculo já existe para esta OS/NFe/OC."
+                correlationId: "OS:3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                details:
+                  constraint: "UQ_vinculo_os_oc_nfe"
+                  recommendedAction: "Use GET /vinculos para consultar o vínculo existente."
+    UnprocessableEntity:
+      description: Regra de negócio violada (validação semântica)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationErrorResponse"
+          examples:
+            missingRequiredAttachment:
+              summary: Tentativa de concluir entrada no destino sem anexo obrigatório
+              value:
+                code: "BUSINESS_RULE_VIOLATION"
+                message: "Não é possível concluir a entrada no destino."
+                correlationId: "OS:3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                details:
+                  statusWorkflow: "ENTRADA_DESTINO_PENDENTE_ANEXO"
+                violations:
+                  - field: "anexos"
+                    rule: "ANEXO_OBRIGATORIO"
+                    message: "Anexe o documento obrigatório (ex.: NFE_ASSINADA_CONFERIDA) para concluir."
+    Forbidden:
+      description: Ação não permitida (RBAC/estado não autorizado)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            forbiddenExample:
+              summary: Usuário sem permissão para executar a ação
+              value:
+                code: "FORBIDDEN"
+                message: "Você não possui permissão para executar esta ação."
+                correlationId: "OS:3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                details:
+                  requiredRole: "FISCAL"
+                  currentRole: "ADM_FILIAL_DESTINO"
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [code, message, correlationId]
+      properties:
+        code:
+          type: string
+          example: "FORBIDDEN"
+        message:
+          type: string
+          example: "Ação não permitida para o papel atual."
+        correlationId:
+          type: string
+          description: "ID de correlação do processo (para troubleshooting/auditoria)."
+          example: "OS:3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        details:
+          type: object
+          additionalProperties: true
+          nullable: true
+
+    FluxType:
+      type: string
+      enum:
+        - COMPRA_DIRETA
+        - ENTREGA_FUTURA_MAE
+        - ENTREGA_FUTURA_FILHA
+
+    WorkflowStatus:
+      type: string
+      description: Estados do workflow (fonte única; ver docs/specs/transferencia-materiais/workflow-states.md)
+      enum:
+        # Compartilhados
+        - OS_CRIADA
+        - ROMANEIO_CONFERIDO
+        - NFE_EMITIDA
+        - XML_OBTIDO
+        - NFE_VALIDADA_OK
+        - NFE_VALIDADA_NOK
+        - CORRECAO_EMISSAO_OU_VINCULO
+        - VINCULO_CRIADO
+        - VINCULO_CORRIGIDO
+        - ENTRADA_DESTINO_PENDENTE_ANEXO
+        - ENTRADA_DESTINO_CONCLUIDA
+        - PROCESSO_CONCLUIDO
+        - PROCESSO_CANCELADO
+        # F1
+        - MATERIAL_FABRICADO
+        - ESTOQUE_ORIGEM_ATUALIZADO
+        - NFE_SAIDA_ORIGEM_EMITIDA
+        - EM_TRANSITO
+        - CHEGADA_MATERIAL_DESTINO
+        - ESTOQUE_DESTINO_ATUALIZADO
+        # F2
+        - OS_ATUALIZADA_DATA_ESTIMADA
+        - NFE_ENTREGA_FUTURA_EMITIDA
+        - NFE_RECEBIDA_SEM_ESTOQUE
+        - OC_CRIADA_PARA_REMESSA
+        - AGUARDANDO_REMESSA
+        - ALERTA_7_DIAS_ENTREGA_ESTIMADA
+        # F3
+        - OC_PENDENTE_ENTREGA_FUTURA
+        - APROVACAO_ENTREGA_PENDENTE
+        - ENTREGA_APROVADA
+        - ENTREGA_REPROVADA
+        - NFE_REMESSA_EMITIDA
+        - VINCULADA_OS_OC_NFE
+        - ENTRADA_ORIGEM_CONCLUIDA
+        - SAIDA_ORIGEM_CONCLUIDA
+        - ALERTA_30_DIAS_DESTINO
+        # Medição (TBD-04)
+        - APROVACAO_MEDICAO_PENDENTE
+        - MEDICAO_APROVADA
+        - MEDICAO_REPROVADA
+
+    OSCreateRequest:
+      type: object
+      required: [numero, filialDestinoId, quantidadePlanejada, fluxType]
+      properties:
+        numero: { type: string, maxLength: 50 }
+        filialDestinoId: { type: string, maxLength: 50 }
+        quantidadePlanejada: { type: number, minimum: 0.001 }
+        fluxType: { $ref: "#/components/schemas/FluxType" }
+
+    OSUpdateRequest:
+      type: object
+      properties:
+        dataEstimadaEntrega:
+          type: string
+          format: date
+
+    OS:
+      type: object
+      required: [id, numero, filialDestinoId, quantidadePlanejada, fluxType, statusWorkflow, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        numero: { type: string, maxLength: 50, example: "OS-2025-000123" }
+        fluxType: { $ref: "#/components/schemas/FluxType" }
+        filialDestinoId: { type: string, maxLength: 50 }
+        quantidadePlanejada: { type: number, format: double, minimum: 0.001, example: 10.0 }
+        dataEstimadaEntrega:
+          type: string
+          format: date
+          nullable: true
+        statusWorkflow: { $ref: "#/components/schemas/WorkflowStatus" }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time, nullable: true }
+
+    VinculoCreateRequest:
+      type: object
+      required: [osId, nfeChaveAcesso]
+      properties:
+        osId: { type: string }
+        ocId: { type: string, nullable: true }
+        nfeChaveAcesso: { type: string }
+        divergenciaQuantidade:
+          type: number
+          nullable: true
+        observacao:
+          type: string
+          nullable: true
+
+    Vinculo:
+      type: object
+      required: [id, osId, nfeChaveAcesso, status, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        osId: { type: string, format: uuid }
+        ocId: { type: string, format: uuid, nullable: true }
+        nfeChaveAcesso: { type: string, maxLength: 60 }
+        divergenciaQuantidade: { type: number, nullable: true }
+        observacao: { type: string, maxLength: 500, nullable: true }
+        status: { $ref: "#/components/schemas/VinculoStatus" }
+        createdAt: { type: string, format: date-time }
+
+    NFeValidacaoRequest:
+      type: object
+      required: [decisao]
+      properties:
+        decisao:
+          type: string
+          enum: [CORRETA, INCORRETA]
+        motivo:
+          type: object
+          nullable: true
+          properties:
+            categoria:
+              type: string
+              enum: [EMISSAO_NFE, VINCULO_ADM_FILIAL]
+            detalhe:
+              type: string
+
+    NFeValidacaoResponse:
+      type: object
+      required: [chaveAcesso, decisao]
+      properties:
+        chaveAcesso: { type: string }
+        decisao: { type: string, enum: [CORRETA, INCORRETA] }
+        etapasCanceladas:
+          type: array
+          items: { type: string }
+
+    AprovacaoDecisaoRequest:
+      type: object
+      required: [decisao]
+      properties:
+        decisao:
+          type: string
+          enum: [APROVAR, REPROVAR]
+        motivo:
+          type: string
+          nullable: true
+
+    Aprovacao:
+      type: object
+      required: [id, tipo, status]
+      properties:
+        id: { type: string }
+        tipo:
+          type: string
+          enum: [ENTREGA, MEDICAO, VINCULO]
+        status:
+          type: string
+          enum: [PENDENTE, APROVADA, REPROVADA]
+        motivoReprova: { type: string, nullable: true }
+
+    AnexoCreateRequest:
+      type: object
+      required: [correlationType, correlationId, storageRef, tipo]
+      properties:
+        correlationType: { type: string, enum: [OS, OC, NFE, VINCULO] }
+        correlationId: { type: string, description: "ID do objeto correlacionado" }
+        tipo: { type: string, maxLength: 80, example: "NFE_ASSINADA_CONFERIDA" }
+        storageRef: { type: string, maxLength: 255, example: "s3://bucket/key.pdf" }
+        fileName: { type: string, maxLength: 255, nullable: true }
+        contentType: { type: string, maxLength: 100, nullable: true }
+        sizeBytes: { type: integer, nullable: true }
+
+    Anexo:
+      type: object
+      required: [id, correlationType, correlationId, tipo, storageRef, uploadedAt]
+      properties:
+        id: { type: string, format: uuid }
+        correlationType: { type: string, enum: [OS, OC, NFE, VINCULO] }
+        correlationId: { type: string, maxLength: 80 }
+        tipo: { type: string, maxLength: 80, example: "NFE_ASSINADA_CONFERIDA" }
+        storageRef: { type: string, maxLength: 255, example: "storage://anexos/OS-.../arquivo.pdf" }
+        fileName: { type: string, maxLength: 255, nullable: true }
+        contentType: { type: string, maxLength: 100, nullable: true }
+        sizeBytes: { type: integer, nullable: true }
+        uploadedBy: { type: string, maxLength: 100, nullable: true }
+        uploadedAt: { type: string, format: date-time }
+
+    VinculoStatus:
+      type: string
+      enum:
+        - PENDENTE
+        - CRIADO
+        - ERRO_VINCULO
+        - CORRIGIDO
+
+    PendenciaTipo:
+      type: string
+      enum:
+        - ERRO_VINCULO
+        - NFE_INCORRETA
+        - FALTA_ANEXO_OBRIGATORIO
+        - INTEGRACAO_FALHOU
+        - SEM_VINCULO_REMESSA
+        - ATRASO_ENTREGA_7_DIAS
+        - ATRASO_DESTINO_30_DIAS
+        - APROVACAO_PENDENTE
+        - MEDICAO_PENDENTE
+
+    PendenciaStatus:
+      type: string
+      enum:
+        - ABERTA
+        - EM_ANDAMENTO
+        - RESOLVIDA
+        - CANCELADA
+
+    NotificacaoTipo:
+      type: string
+      enum:
+        - CHEGADA_MATERIAL
+        - NFE_ENTRADA_DISPONIVEL
+        - NFE_SAIDA_PRONTA_IMPRESSAO
+        - CANCELAMENTO_PROCESSO
+        - PENDENCIA_ABERTA
+        - LEMBRETE_7_DIAS_ENTREGA_ESTIMADA
+        - LEMBRETE_30_DIAS_DESTINO
+        - MEDICAO_CONCLUIDA
+
+    NotificacaoStatus:
+      type: string
+      enum:
+        - ENFILEIRADA
+        - ENVIADA
+        - FALHOU
+
+    OC:
+      type: object
+      required: [id, numero, osId, tipo, status, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        numero: { type: string, example: "OC-12345" }
+        osId: { type: string, format: uuid }
+        tipo:
+          type: string
+          enum: [COMPRA_DIRETA, ENTREGA_FUTURA]
+        status:
+          type: string
+          example: "PENDENTE_ENTREGA_FUTURA"
+        dataEstimadaEntrega:
+          type: string
+          format: date
+          nullable: true
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time, nullable: true }
+
+    OCPendente:
+      type: object
+      required: [ocId, osId, status]
+      properties:
+        ocId: { type: string, format: uuid }
+        osId: { type: string, format: uuid }
+        status: { type: string }
+        dataEstimadaEntrega: { type: string, format: date, nullable: true }
+        diasPendente: { type: integer, nullable: true }
+
+    QiveNFeRecebidaEvent:
+      type: object
+      required: [idempotencyKey, chaveAcesso, xmlRef, receivedAt]
+      properties:
+        idempotencyKey:
+          type: string
+          description: "Chave idempotente (sugestão: chave de acesso)"
+        chaveAcesso: { type: string }
+        xmlRef: { type: string, description: "Referência ao XML armazenado" }
+        receivedAt: { type: string, format: date-time }
+
+    NFe:
+      type: object
+      required: [chaveAcesso, tipo, validacaoStatus, createdAt]
+      properties:
+        chaveAcesso:
+          type: string
+          description: "Chave de acesso da NFe"
+          example: "35250123456789000123550010000012341000012345"
+        tipo:
+          type: string
+          enum: [VENDA, ENTREGA_FUTURA_MAE, REMESSA_FILHA, SAIDA_ORIGEM, ENTRADA_DESTINO]
+        xmlRef:
+          type: string
+          nullable: true
+          example: "storage://xml/3525...2345.xml"
+        validacaoStatus:
+          type: string
+          enum: [PENDENTE, CORRETA, INCORRETA]
+        motivoCategoria:
+          type: string
+          enum: [EMISSAO_NFE, VINCULO_ADM_FILIAL]
+          nullable: true
+        motivoDetalhe:
+          type: string
+          nullable: true
+          example: "CFOP incorreto na remessa."
+        receivedAt: { type: string, format: date-time, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time, nullable: true }
+
+
+    Pendencia:
+      type: object
+      required: [id, tipo, status, correlationType, correlationId, descricao, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        tipo:
+          $ref: "#/components/schemas/PendenciaTipo"
+        status:
+          $ref: "#/components/schemas/PendenciaStatus"
+        correlationType: { type: string, enum: [OS, OC, NFE, VINCULO] }
+        correlationId: { type: string }
+        descricao: { type: string }
+        ownerRole: { type: string, nullable: true, example: "FISCAL" }
+        dueAt: { type: string, format: date-time, nullable: true }
+        createdAt: { type: string, format: date-time }
+        resolvedAt: { type: string, format: date-time, nullable: true }
+
+    Notificacao:
+      type: object
+      required: [id, tipo, status, correlationType, correlationId, destinatariosTo, assunto, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        tipo:
+          $ref: "#/components/schemas/NotificacaoTipo"
+        status:
+          $ref: "#/components/schemas/NotificacaoStatus"
+        correlationType: { type: string, enum: [OS, OC, NFE, VINCULO] }
+        correlationId: { type: string }
+        destinatariosTo:
+          type: array
+          items: { type: string, format: email }
+        destinatariosCc:
+          type: array
+          items: { type: string, format: email }
+          nullable: true
+        assunto: { type: string }
+        corpo: { type: string }
+        providerMessageId: { type: string, nullable: true }
+        erro: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        sentAt: { type: string, format: date-time, nullable: true }
+
+
+    AuditoriaEventType:
+      type: string
+      description: Tipos de eventos de auditoria
+      enum:
+        - OS_CRIADA
+        - OS_DATA_ESTIMADA_ATUALIZADA
+        - MATERIAL_FABRICADO
+        - ROMANEIO_CONFERIDO
+        - NFE_EMITIDA
+        - NFE_XML_OBTIDO
+        - FISCAL_NFE_VALIDADA
+        - VINCULO_CRIADO
+        - VINCULO_CORRIGIDO
+        - ERRO_VINCULO_IDENTIFICADO
+        - ESTOQUE_ORIGEM_ATUALIZADO
+        - NFE_SAIDA_ORIGEM_EMITIDA
+        - CHEGADA_MATERIAL_DESTINO
+        - ANEXO_ADICIONADO
+        - ENTRADA_DESTINO_CONCLUIDA
+        - PENDENCIA_ABERTA
+        - PENDENCIA_RESOLVIDA
+        - NOTIFICACAO_ENFILEIRADA
+        - NOTIFICACAO_ENVIADA
+        - NOTIFICACAO_FALHOU
+        - WORKFLOW_TRANSICAO
+        - PROCESSO_CANCELADO
+
+    AuditoriaEvento:
+      type: object
+      required: [id, eventType, correlationType, correlationId, actorRole, timestamp, payload]
+      properties:
+        id: { type: string, format: uuid }
+        eventType:
+          $ref: "#/components/schemas/AuditoriaEventType"
+        correlationType: { type: string, enum: [OS, OC, NFE, VINCULO] }
+        correlationId: { type: string }
+        actorRole: { type: string, example: "FISCAL" }
+        actorId: { type: string, nullable: true }
+        timestamp: { type: string, format: date-time }
+        payload:
+          type: object
+          additionalProperties: true
+
+    ValidationViolation:
+      type: object
+      required: [field, rule, message]
+      properties:
+        field:
+          type: string
+          example: "anexos"
+        rule:
+          type: string
+          example: "ANEXO_OBRIGATORIO"
+        message:
+          type: string
+          example: "É obrigatório anexar ao menos um documento antes de concluir a entrada no destino."
+
+    ValidationErrorResponse:
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+        - type: object
+          required: [violations]
+          properties:
+            violations:
+              type: array
+              items:
+                $ref: "#/components/schemas/ValidationViolation"

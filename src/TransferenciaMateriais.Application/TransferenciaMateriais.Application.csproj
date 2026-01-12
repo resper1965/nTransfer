@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>TransferenciaMateriais.Application</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TransferenciaMateriais.Domain\TransferenciaMateriais.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
