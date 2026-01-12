@@ -6,17 +6,16 @@ Centralizar definições pendentes (TBD) para evitar decisões implícitas.
 ## Pendências (TBD)
 
 ### TBD-01 — Mecanismo de integração Qive ↔ RM
-- Status: Aguardando definição
-- Opções: webhook | polling | fila/eventos | híbrido
-- Impacto: arquitetura de integração, latência, segurança, idempotência
-- Referências: PLAN (P4), OpenAPI `/integrations/qive/*`
+- Status: **FECHADO** (2026-01-12)
+- Decisão: **Stub mantido para MVP. Integração real será implementada em fase posterior com contrato definido conforme `contracts/integracao-qive-rm.md`.**
+- Impacto: RF-03, RF-05, RNF-02
+- Observação: Stub funcional implementado com modos ALWAYS_OK, FAIL_RATE, SCENARIO. Integração real será TBD futuro.
 
-### TBD-02 — Dicionário técnico de movimentos (aguarde definição)
-**Status:** AGUARDE DEFINIÇÃO  
-**Descrição:** O dicionário técnico de movimentos (RM nFlow / estoque não contábil / eventos equivalentes) será consolidado ao final do projeto, após estabilização dos fluxos e confirmação do mapeamento real de movimentos e seus códigos.  
-**Artefato:** [`docs/contracts/movimentos-dicionario.md`](../../contracts/movimentos-dicionario.md) (intencionalmente incompleto por enquanto).  
-**Entrega final:** dicionário completo (códigos, descrições, origem/destino, impacto no workflow, mapeamento RM/nFlow/Qive).  
-**Impacto:** parametrização e rastreabilidade de movimentos de estoque não contábil.
+### TBD-02 — Dicionário técnico de movimentos
+- Status: **FECHADO** (2026-01-12)
+- Decisão: **Dicionário técnico de movimentos será definido quando a integração real RM/nFlow for implementada (pós-MVP). Para o MVP, o sistema utiliza eventos de auditoria e estados de workflow como abstração dos movimentos reais.**
+- Impacto: parametrização e rastreabilidade de movimentos de estoque não contábil
+- Artefato: [`docs/contracts/movimentos-dicionario.md`](../../contracts/movimentos-dicionario.md) (mapeamento MVP documentado)
 
 ### TBD-03 — Política "Aprova entrega?"
 - Status: **FECHADO** (2026-01-12)
@@ -30,6 +29,7 @@ Centralizar definições pendentes (TBD) para evitar decisões implícitas.
 - Decisão: **A medição é feita dentro do RM/Contratos com base na Ordem de Serviço aberta no nFlow.**
 - Impacto: estados, evidências e auditoria
 - Observação: A rotina de transferência não gerencia a medição diretamente; ela ocorre no RM/Contratos. Os estados de medição (`APROVACAO_MEDICAO_PENDENTE`, `MEDICAO_APROVADA`, `MEDICAO_REPROVADA`) podem ser atualizados via integração quando a medição for concluída no RM.
+- Implementação: `ProcessarMedicaoConcluidaUseCase` criado.
 
 ### TBD-05 — Stack técnico (backend/frontend/banco)
 - Status: **FECHADO** (2025-01-12)
@@ -42,9 +42,10 @@ Centralizar definições pendentes (TBD) para evitar decisões implícitas.
 - Impacto: integração, reconciliação de status, telas e automações
 
 ### TBD-07 — "Caminhão no local": como identificar
-- Status: Aguardando definição
-- Observação: aparece como elemento/legenda do fluxo
-- Opções: input manual | evento externo | integração logística
+- Status: **FECHADO** (2026-01-12)
+- Decisão: **Registro manual via API. Evento de auditoria `CAMINHAO_NO_LOCAL` registrado. Se no destino e estado `EM_TRANSITO`, transição automática para `CHEGADA_MATERIAL_DESTINO`.**
+- Impacto: RF-09, estados do workflow
+- Implementação: `RegistrarCaminhaoNoLocalUseCase` criado.
 
 ## Decisões fechadas
 - DEC-01: Aplicação é rotina adicional (complementar).
