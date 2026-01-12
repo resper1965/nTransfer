@@ -23,6 +23,9 @@ lint: ## Roda formatação e análise de código
 build: ## Compila a solução
 	dotnet build
 
+validate: ## Valida OpenAPI, build, testes e links
+	@./scripts/validate.sh
+
 check: lint test ## Roda lint + test (gate de PR)
 
 clean: ## Limpa artefatos de build
