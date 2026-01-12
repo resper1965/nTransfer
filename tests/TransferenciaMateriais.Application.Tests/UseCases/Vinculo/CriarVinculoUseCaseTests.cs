@@ -5,6 +5,7 @@ using TransferenciaMateriais.Domain.Entities;
 using TransferenciaMateriais.Domain.Enums;
 using TransferenciaMateriais.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace TransferenciaMateriais.Application.Tests.UseCases.Vinculo;
@@ -22,8 +23,7 @@ public class CriarVinculoUseCaseTests : IDisposable
             .Options;
 
         _context = new ApplicationDbContext(options);
-        var loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole());
-        _auditoriaService = new AuditoriaService(_context, loggerFactory.CreateLogger<AuditoriaService>());
+        _auditoriaService = new AuditoriaService(_context, NullLogger<AuditoriaService>.Instance);
         _useCase = new CriarVinculoUseCase(_context, _auditoriaService);
     }
 

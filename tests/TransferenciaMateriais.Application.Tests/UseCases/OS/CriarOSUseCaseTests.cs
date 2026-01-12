@@ -4,6 +4,7 @@ using TransferenciaMateriais.Application.Services;
 using TransferenciaMateriais.Domain.Enums;
 using TransferenciaMateriais.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace TransferenciaMateriais.Application.Tests.UseCases.OS;
@@ -21,8 +22,7 @@ public class CriarOSUseCaseTests : IDisposable
             .Options;
 
         _context = new ApplicationDbContext(options);
-        var loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole());
-        _auditoriaService = new AuditoriaService(_context, loggerFactory.CreateLogger<AuditoriaService>());
+        _auditoriaService = new AuditoriaService(_context, NullLogger<AuditoriaService>.Instance);
         _useCase = new CriarOSUseCase(_context, _auditoriaService);
     }
 
