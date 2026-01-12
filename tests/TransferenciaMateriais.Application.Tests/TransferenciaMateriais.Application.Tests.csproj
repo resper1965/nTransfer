@@ -23,6 +23,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TransferenciaMateriais.Application\TransferenciaMateriais.Application.csproj" />
+    <ProjectReference Include="..\..\src\TransferenciaMateriais.Infrastructure\TransferenciaMateriais.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.0" />
   </ItemGroup>
 
 </Project>
