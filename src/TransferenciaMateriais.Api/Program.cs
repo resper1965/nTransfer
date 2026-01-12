@@ -11,6 +11,9 @@ using TransferenciaMateriais.Application.UseCases.Paineis;
 using TransferenciaMateriais.Application.UseCases.Anexos;
 using TransferenciaMateriais.Application.UseCases.Medicao;
 using TransferenciaMateriais.Application.UseCases.Caminhao;
+using TransferenciaMateriais.Application.UseCases.Pendencias;
+using TransferenciaMateriais.Application.UseCases.Notificacoes;
+using TransferenciaMateriais.Application.UseCases.Aprovacoes;
 using TransferenciaMateriais.Application.Services;
 using TransferenciaMateriais.Domain;
 using TransferenciaMateriais.Infrastructure.Integration;
@@ -44,8 +47,14 @@ builder.Services.AddScoped<ListarOCPendenteEntregaFuturaUseCase>();
 builder.Services.AddScoped<ListarPendenciasErroVinculoUseCase>();
 builder.Services.AddScoped<ListarAprovacoesPendentesUseCase>();
 builder.Services.AddScoped<ValidarAnexosObrigatoriosUseCase>();
+builder.Services.AddScoped<ListarAnexosUseCase>();
+builder.Services.AddScoped<CriarAnexoUseCase>();
 builder.Services.AddScoped<ProcessarMedicaoConcluidaUseCase>();
 builder.Services.AddScoped<RegistrarCaminhaoNoLocalUseCase>();
+builder.Services.AddScoped<ListarPendenciasUseCase>();
+builder.Services.AddScoped<ListarNotificacoesUseCase>();
+builder.Services.AddScoped<ListarAprovacoesUseCase>();
+builder.Services.AddScoped<ProcessarDecisaoAprovacaoUseCase>();
 
 // Register Services
 builder.Services.AddScoped<NotificationService>();
