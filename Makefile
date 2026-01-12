@@ -30,3 +30,15 @@ check: lint test ## Roda lint + test (gate de PR)
 
 clean: ## Limpa artefatos de build
 	dotnet clean
+
+docker-build: ## Build da imagem Docker
+	docker build -t transferencia-api:latest .
+
+docker-run: ## Roda a API em Docker (requer docker-compose.prod.yml)
+	docker compose -f docker-compose.prod.yml up -d
+
+docker-logs: ## Mostra logs do container
+	docker compose -f docker-compose.prod.yml logs -f api
+
+docker-down: ## Para containers de produção
+	docker compose -f docker-compose.prod.yml down
