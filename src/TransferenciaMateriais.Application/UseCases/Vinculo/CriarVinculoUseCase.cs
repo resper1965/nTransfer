@@ -1,4 +1,5 @@
 using TransferenciaMateriais.Application.DTOs;
+using TransferenciaMateriais.Application.Services;
 using TransferenciaMateriais.Domain.Entities;
 using TransferenciaMateriais.Domain.Enums;
 using TransferenciaMateriais.Infrastructure.Data;
@@ -9,10 +10,14 @@ namespace TransferenciaMateriais.Application.UseCases.Vinculo;
 public class CriarVinculoUseCase
 {
     private readonly ApplicationDbContext _context;
+    private readonly AuditoriaService _auditoriaService;
 
-    public CriarVinculoUseCase(ApplicationDbContext context)
+    public CriarVinculoUseCase(
+        ApplicationDbContext context,
+        AuditoriaService auditoriaService)
     {
         _context = context;
+        _auditoriaService = auditoriaService;
     }
 
     public async Task<VinculoDto> ExecuteAsync(VinculoCreateRequest request)
@@ -66,6 +71,9 @@ public class CriarVinculoUseCase
 
         _context.Vinculos.Add(vinculo);
         await _context.SaveChangesAsync();
+
+        // Registrar auditoria
+        await _auditoriaService.RegistrarVinculoCriadoAsync(vinculo, "ADM_FILIAL_ORIGEM", null);
 
         return new VinculoDto
         {

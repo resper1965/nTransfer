@@ -1,4 +1,5 @@
 using TransferenciaMateriais.Application.DTOs;
+using TransferenciaMateriais.Application.Services;
 using TransferenciaMateriais.Domain.Entities;
 using TransferenciaMateriais.Domain.Enums;
 using TransferenciaMateriais.Infrastructure.Data;
@@ -9,10 +10,14 @@ namespace TransferenciaMateriais.Application.UseCases.OS;
 public class CriarOSUseCase
 {
     private readonly ApplicationDbContext _context;
+    private readonly AuditoriaService _auditoriaService;
 
-    public CriarOSUseCase(ApplicationDbContext context)
+    public CriarOSUseCase(
+        ApplicationDbContext context,
+        AuditoriaService auditoriaService)
     {
         _context = context;
+        _auditoriaService = auditoriaService;
     }
 
     public async Task<OSDto> ExecuteAsync(OSCreateRequest request, string actorRole, string? actorId = null)
@@ -44,6 +49,9 @@ public class CriarOSUseCase
 
         _context.OrdensServico.Add(os);
         await _context.SaveChangesAsync();
+
+        // Registrar auditoria
+        await _auditoriaService.RegistrarOSCriadaAsync(os, actorRole, actorId);
 
         return MapToDto(os);
     }

@@ -7,6 +7,7 @@ using TransferenciaMateriais.Application.UseCases.Fiscal;
 using TransferenciaMateriais.Application.UseCases.Auditoria;
 using TransferenciaMateriais.Application.UseCases.Integration;
 using TransferenciaMateriais.Application.UseCases.Notification;
+using TransferenciaMateriais.Application.UseCases.Paineis;
 using TransferenciaMateriais.Application.Services;
 using TransferenciaMateriais.Domain;
 using TransferenciaMateriais.Infrastructure.Integration;
@@ -36,9 +37,13 @@ builder.Services.AddScoped<ValidarNFeUseCase>();
 builder.Services.AddScoped<ListarAuditoriaUseCase>();
 builder.Services.AddScoped<ProcessarNFeQiveUseCase>();
 builder.Services.AddScoped<EnviarNotificacaoUseCase>();
+builder.Services.AddScoped<ListarOCPendenteEntregaFuturaUseCase>();
+builder.Services.AddScoped<ListarPendenciasErroVinculoUseCase>();
+builder.Services.AddScoped<ListarAprovacoesPendentesUseCase>();
 
 // Register Services
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<AuditoriaService>();
 
 // Register Integration Adapter (stub até TBD-01)
 builder.Services.AddScoped<IIntegrationAdapter, StubIntegrationAdapter>();
