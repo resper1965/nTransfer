@@ -57,22 +57,17 @@ echo -e "${GREEN}✅ PostgreSQL está pronto${NC}"
 
 echo ""
 echo -e "${GREEN}📦 Passo 3: Aplicando migrations${NC}"
-# Criar container temporário para rodar migrations
-docker run --rm \
-    --network transferencia_default \
-    -e "ConnectionStrings__DefaultConnection=${DATABASE_URL}" \
-    transferencia-api:local \
-    dotnet ef database update \
-    --project src/TransferenciaMateriais.Infrastructure \
-    --startup-project src/TransferenciaMateriais.Api \
-    --connection "${DATABASE_URL}" || {
-    echo -e "${YELLOW}⚠️  Migrations podem precisar ser executadas manualmente${NC}"
-    echo "   Execute: docker compose -f docker-compose.prod.yml exec api dotnet ef database update"
-}
+# Migrations serão aplicadas automaticamente quando a API subir
+# Ou podem ser executadas manualmente depois:
+echo -e "${YELLOW}   Migrations serão aplicadas quando a API iniciar${NC}"
+echo "   Para aplicar manualmente depois:"
+echo "   docker compose -f docker-compose.prod.yml exec api dotnet ef database update"
 
 echo ""
-echo -e "${GREEN}📦 Passo 4: Subindo API${NC}"
-docker compose -f docker-compose.prod.yml --env-file .env.local up -d api
+echo -e "${GREEN}📦 Passo 4: Subindo API e serviços${NC}"
+# Usar docker compose com env file
+export $(cat .env.local | grep -v '^#' | xargs)
+docker compose -f docker-compose.prod.yml up -d
 
 echo ""
 echo -e "${GREEN}✅ Deploy local concluído!${NC}"
