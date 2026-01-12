@@ -1,5 +1,6 @@
 using TransferenciaMateriais.Application.DTOs;
 using TransferenciaMateriais.Application.UseCases.Vinculo;
+using TransferenciaMateriais.Application.Services;
 using TransferenciaMateriais.Domain.Entities;
 using TransferenciaMateriais.Domain.Enums;
 using TransferenciaMateriais.Infrastructure.Data;

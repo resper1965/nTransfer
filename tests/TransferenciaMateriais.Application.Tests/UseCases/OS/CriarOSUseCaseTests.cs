@@ -1,5 +1,6 @@
 using TransferenciaMateriais.Application.DTOs;
 using TransferenciaMateriais.Application.UseCases.OS;
+using TransferenciaMateriais.Application.Services;
 using TransferenciaMateriais.Domain.Enums;
 using TransferenciaMateriais.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
