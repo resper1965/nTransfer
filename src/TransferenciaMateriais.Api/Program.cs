@@ -87,18 +87,25 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Transferência de Materiais v0.2.0");
-        c.RoutePrefix = string.Empty; // Swagger na raiz em dev
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Transferência de Materiais v0.2.0");
+    c.RoutePrefix = "swagger"; // Swagger em /swagger
+});
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+// Endpoint na raiz com informações da API
+app.MapGet("/", () => Results.Json(new
+{
+    nome = "Transferência de Materiais Entre Filiais API",
+    versao = "0.2.0",
+    swagger = "/swagger",
+    health = "/health",
+    descricao = "API para orquestração de workflow de transferência de materiais entre filiais"
+}));
 
 app.Run();

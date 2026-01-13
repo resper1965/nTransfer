@@ -12,7 +12,7 @@ services:
     env_file:
       - .env.local
     environment:
-      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=${DATABASE_URL:-Host=postgres;Database=transferencia_materiais;Username=transferencia;Password=transferencia}
       - Email__Provider=${EMAIL_PROVIDER:-mailpit}
